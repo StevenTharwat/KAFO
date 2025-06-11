@@ -50,7 +50,7 @@ namespace Kafo.DAL.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null)
+        public IEnumerable<T> GetAll(string? includeProperties = null, Expression<Func<T, bool>>? filter = null)
         {
             IQueryable<T> query = _dbSet;
             if (filter != null)

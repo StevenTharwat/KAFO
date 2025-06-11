@@ -4,7 +4,7 @@ using KAFO.Domain.Products;
 
 namespace Kafo.DAL.Repository
 {
-    public class ProductRepsitory : Repository<Product>
+    public class ProductRepsitory : Repository<Product>, IProductRepository
     {
         private readonly AppDBContext _dbcontext;
         public ProductRepsitory(AppDBContext dbContext) : base(dbContext)
