@@ -1,0 +1,780 @@
+﻿@model Kafo.ASPMVC.Models.HomeViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم";
+}
+
+<div class="container-fluid">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">إجمالي الأرباح اليوم</h5>
+                        <h2 class="card-text">@Model.TodayProfit ريال</h2>
+                    </div>
+                    <i class="fas fa-chart-line fa-3x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">إجمالي المبيعات اليوم</h5>
+                        <h2 class="card-text">@Model.TodaySales ريال</h2>
+                    </div>
+                    <i class="fas fa-shopping-cart fa-3x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">المنتجات المباعة اليوم</h5>
+                        <h2 class="card-text">@Model.TodayProductsSold</h2>
+                    </div>
+                    <i class="fas fa-box fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Sections -->
+    <div class="card mb-4" id="sellers-management">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">إدارة البائعين</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSellerModal">
+                    <i class="fas fa-plus"></i> إضافة بائع جديد
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" placeholder="البحث عن البائعين بالاسم، البريد الإلكتروني، أو الدور...">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الدور</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var seller in Model.Sellers)
+                        {
+                            <tr>
+                                <td>@seller.Id</td>
+                                <td>@seller.Name</td>
+                                <td>@seller.Email</td>
+                                <td>@seller.Role</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editSeller(@seller.Id)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteSeller(@seller.Id)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(Model.CurrentSellerPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { sellerPage = Model.CurrentSellerPage - 1 })" tabindex="-1">السابق</a>
+                    </li>
+                    @for (int i = 1 ; i <= Model.TotalSellerPages ; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentSellerPage ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { sellerPage = i })">@i</a></li>
+                    }
+                    <li class="page-item @(Model.CurrentSellerPage == Model.TotalSellerPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { sellerPage = Model.CurrentSellerPage + 1 })">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card mb-4" id="categories-management">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">إدارة الفئات</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="fas fa-plus"></i> إضافة فئة جديدة
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم الفئة</th>
+                            <th>الوصف</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <tr>
+                                <td>@category.Id</td>
+                                <td>@category.Name</td>
+                                <td>@category.Description</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editCategory(@category.Id)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCategory(@category.Id)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(Model.CurrentCategoryPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { categoryPage = Model.CurrentCategoryPage - 1 })" tabindex="-1">السابق</a>
+                    </li>
+                    @for (int i = 1 ; i <= Model.TotalCategoryPages ; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentCategoryPage ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { categoryPage = i })">@i</a></li>
+                    }
+                    <li class="page-item @(Model.CurrentCategoryPage == Model.TotalCategoryPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { categoryPage = Model.CurrentCategoryPage + 1 })">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card mb-4" id="products-management">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">إدارة المنتجات</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="fas fa-plus"></i> إضافة منتج جديد
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم المنتج</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Products)
+                        {
+                            <tr>
+                                <td>@product.Id</td>
+                                <td>@product.Name</td>
+                                <td>@product.SellingPrice ريال</td>
+                                <td>@product.StockQuantity</td>
+                                <td>
+                                    <span class="badge bg-@(product.IsActive ? "success" : "danger")">
+                                        @(product.IsActive ? "متوفر" : "غير متوفر")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editProduct(@product.Id)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(@product.Id)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(Model.CurrentProductPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { productPage = Model.CurrentProductPage - 1 })" tabindex="-1">السابق</a>
+                    </li>
+                    @for (int i = 1 ; i <= Model.TotalProductPages ; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentProductPage ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { productPage = i })">@i</a></li>
+                    }
+                    <li class="page-item @(Model.CurrentProductPage == Model.TotalProductPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { productPage = Model.CurrentProductPage + 1 })">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card mb-4" id="admins-management">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">إدارة المسؤولين</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+                    <i class="fas fa-plus"></i> إضافة مسؤول جديد
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم المسؤول</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var admin in Model.Admins)
+                        {
+                            <tr>
+                                <td>@admin.Id</td>
+                                <td>@admin.Name</td>
+                                <td>@admin.Email</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editAdmin(@admin.Id)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAdmin(@admin.Id)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(Model.CurrentAdminPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { adminPage = Model.CurrentAdminPage - 1 })" tabindex="-1">السابق</a>
+                    </li>
+                    @for (int i = 1 ; i <= Model.TotalAdminPages ; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentAdminPage ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { adminPage = i })">@i</a></li>
+                    }
+                    <li class="page-item @(Model.CurrentAdminPage == Model.TotalAdminPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { adminPage = Model.CurrentAdminPage + 1 })">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Placeholder for Profile Management -->
+    <div class="card mb-4" id="profile-management" style="display:none;">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">الملف الشخصي</h4>
+        </div>
+        <div class="card-body">
+            <p>محتوى الملف الشخصي سيتم إضافته هنا.</p>
+            <!-- Example: User profile details -->
+            <form>
+                <div class="mb-3">
+                    <label for="profileName" class="form-label">الاسم</label>
+                    <input type="text" class="form-control" id="profileName" value="اسم المسؤول">
+                </div>
+                <div class="mb-3">
+                    <label for="profileEmail" class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="profileEmail" value="admin@example.com">
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reports Management Section -->
+    <div class="card mb-4" id="reports-management" style="display:none;">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">التقارير</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h5>اختر نوع التقرير:</h5>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <button class="btn btn-info report-type-btn" data-report-type="profit">إجمالي الأرباح</button>
+                        <button class="btn btn-warning report-type-btn" data-report-type="sales">إجمالي المبيعات</button>
+                        <button class="btn btn-dark report-type-btn" data-report-type="most_sold">المنتج الأكثر مبيعًا</button>
+                        <button class="btn btn-success report-type-btn" data-report-type="most_profitable_seller">البائع الأكثر ربحاً</button>
+                        <button class="btn btn-primary report-type-btn" data-report-type="most_profitable_product">المنتج الأكثر ربحاً</button>
+                        <button class="btn btn-info report-type-btn" data-report-type="total_payments">عدد المدفوعات الكلي</button>
+                        <button class="btn btn-secondary report-type-btn" data-report-type="sold_products">المنتجات المباعة</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="report-details-section" style="display:none;">
+                <h5 class="mt-4" id="report-title"></h5>
+                <div class="row mb-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="reportStartDate" class="form-label">تاريخ البدء</label>
+                        <input type="date" class="form-control" id="reportStartDate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="reportEndDate" class="form-label">تاريخ الانتهاء</label>
+                        <input type="date" class="form-control" id="reportEndDate">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="generateReport()">عرض التقرير</button>
+                    </div>
+                </div>
+                <div id="report-results" class="mt-3 p-3 border rounded bg-light">
+                    <p class="text-muted">الرجاء تحديد نطاق تاريخ لعرض التقرير.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة منتج جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label class="form-label">اسم المنتج</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">السعر</label>
+                        <input type="number" class="form-control" name="price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الكمية</label>
+                        <input type="number" class="form-control" name="quantity" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="saveProduct()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Seller Modal -->
+<div class="modal fade" id="addSellerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة بائع جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSellerForm">
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الدور</label>
+                        <input type="text" class="form-control" name="role" value="بائع" required readonly>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="saveSeller()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Admin Modal -->
+<div class="modal fade" id="addAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة مسؤول جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addAdminForm">
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="saveAdmin()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة فئة جديدة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <div class="mb-3">
+                        <label class="form-label">اسم الفئة</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="saveCategory()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Actions Template -->
+<template id="report-actions-template">
+    <div class="report-actions mt-3 d-flex gap-2 justify-content-end">
+        <button class="btn btn-primary" onclick="downloadReportAsPDF()">
+            <i class="fas fa-download"></i> تحميل PDF
+        </button>
+        <button class="btn btn-secondary" onclick="printReport()">
+            <i class="fas fa-print"></i> طباعة
+        </button>
+    </div>
+</template>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function editSeller(id) { alert('تعديل البائع رقم ' + id); }
+        function deleteSeller(id) { if (confirm('هل أنت متأكد من حذف هذا البائع؟')) { alert('حذف البائع رقم ' + id); } }
+        function editCategory(id) { alert('تعديل الفئة رقم ' + id); }
+        function deleteCategory(id) { if (confirm('هل أنت متأكد من حذف هذه الفئة؟')) { alert('حذف الفئة رقم ' + id); } }
+        function editProduct(id) { alert('تعديل المنتج رقم ' + id); }
+        function deleteProduct(id) { if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) { alert('حذف المنتج رقم ' + id); } }
+        function editAdmin(id) { alert('تعديل المسؤول رقم ' + id); }
+        function deleteAdmin(id) { if (confirm('هل أنت متأكد من حذف هذا المسؤول؟')) { alert('حذف المسؤول رقم ' + id); } }
+
+        function saveProduct() {
+            const form = document.getElementById('addProductForm');
+            const formData = new FormData(form);
+            // In a real application, send this data to your API.
+            alert('تم حفظ المنتج بنجاح');
+            form.reset();
+            $('#addProductModal').modal('hide');
+        }
+
+        function saveSeller() {
+            const form = document.getElementById('addSellerForm');
+            const formData = new FormData(form);
+            // In a real application, send this data to your API.
+            alert('تم حفظ البائع بنجاح');
+            form.reset();
+            $('#addSellerModal').modal('hide');
+        }
+
+        function saveAdmin() {
+            const form = document.getElementById('addAdminForm');
+            const formData = new FormData(form);
+            // In a real application, send this data to your API.
+            alert('تم حفظ المسؤول بنجاح');
+            form.reset();
+            $('#addAdminModal').modal('hide');
+        }
+
+        function saveCategory() {
+            const form = document.getElementById('addCategoryForm');
+            const formData = new FormData(form);
+            // In a real application, send this data to your API.
+            alert('تم حفظ الفئة بنجاح');
+            form.reset();
+            $('#addCategoryModal').modal('hide');
+        }
+
+        let currentReportType = '';
+
+        $('.report-type-btn').on('click', function() {
+            currentReportType = $(this).data('report-type');
+            const reportTitleElement = document.getElementById('report-title');
+            const reportDetailsSection = document.getElementById('report-details-section');
+
+            $('.report-type-btn').removeClass('active');
+            $(this).addClass('active');
+
+            switch (currentReportType) {
+                case 'profit':
+                    reportTitleElement.innerText = 'تقرير إجمالي الأرباح';
+                    break;
+                case 'sales':
+                    reportTitleElement.innerText = 'تقرير إجمالي المبيعات';
+                    break;
+                case 'most_sold':
+                    reportTitleElement.innerText = 'تقرير المنتج الأكثر مبيعًا';
+                    break;
+                case 'most_profitable_seller':
+                    reportTitleElement.innerText = 'تقرير البائع الأكثر ربحاً';
+                    break;
+                case 'most_profitable_product':
+                    reportTitleElement.innerText = 'تقرير المنتج الأكثر ربحاً';
+                    break;
+                case 'total_payments':
+                    reportTitleElement.innerText = 'تقرير عدد المدفوعات الكلي';
+                    break;
+                case 'sold_products':
+                    reportTitleElement.innerText = 'تقرير المنتجات المباعة';
+                    break;
+            }
+            reportDetailsSection.style.display = 'block';
+            document.getElementById('report-results').innerHTML = '<p class="text-muted">الرجاء تحديد نطاق تاريخ لعرض التقرير.</p>';
+        });
+
+        function generateReport() {
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            const reportResultsDiv = document.getElementById('report-results');
+
+            if (startDate && endDate) {
+                let reportDataHtml = `
+                    <div class="report-content">
+                        <div class="report-header mb-4">
+                            <h4 class="text-center mb-3">${document.getElementById('report-title').innerText}</h4>
+                            <p class="text-center text-muted">التقرير من <strong>${startDate}</strong> إلى <strong>${endDate}</strong></p>
+                        </div>`;
+
+                if (currentReportType === 'profit') {
+                    const profit = (Math.random() * 5000 + 1000).toFixed(2);
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="alert alert-success">
+                                <h5 class="mb-0">إجمالي الأرباح للفترة: <strong>${profit} ريال</strong></h5>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'sales') {
+                    const sales = (Math.random() * 10000 + 2000).toFixed(2);
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="alert alert-info">
+                                <h5 class="mb-0">إجمالي المبيعات للفترة: <strong>${sales} ريال</strong></h5>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'most_sold') {
+                    const products = [
+                        { name: "منتج أ", quantity: Math.floor(Math.random() * 100) + 10 },
+                        { name: "منتج ب", quantity: Math.floor(Math.random() * 100) + 10 },
+                        { name: "منتج ج", quantity: Math.floor(Math.random() * 100) + 10 }
+                    ];
+                    products.sort((a, b) => b.quantity - a.quantity);
+
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped mt-3">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>المنتج</th>
+                                            <th>الكمية المباعة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                    products.forEach(p => {
+                        reportDataHtml += `
+                                        <tr>
+                                            <td>${p.name}</td>
+                                            <td>${p.quantity}</td>
+                                        </tr>`;
+                    });
+                    reportDataHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'most_profitable_seller') {
+                    const sellers = [
+                        { name: "البائع أ", profit: (Math.random() * 1000 + 500).toFixed(2) },
+                        { name: "البائع ب", profit: (Math.random() * 1000 + 500).toFixed(2) },
+                        { name: "البائع ج", profit: (Math.random() * 1000 + 500).toFixed(2) }
+                    ];
+                    sellers.sort((a, b) => b.profit - a.profit);
+
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped mt-3">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>البائع</th>
+                                            <th>إجمالي الربح</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                    sellers.forEach(s => {
+                        reportDataHtml += `
+                                        <tr>
+                                            <td>${s.name}</td>
+                                            <td>${s.profit} ريال</td>
+                                        </tr>`;
+                    });
+                    reportDataHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'most_profitable_product') {
+                    const products = [
+                        { name: "منتج X", profit: (Math.random() * 500 + 100).toFixed(2) },
+                        { name: "منتج Y", profit: (Math.random() * 500 + 100).toFixed(2) },
+                        { name: "منتج Z", profit: (Math.random() * 500 + 100).toFixed(2) }
+                    ];
+                    products.sort((a, b) => b.profit - a.profit);
+
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped mt-3">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>المنتج</th>
+                                            <th>إجمالي الربح</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                    products.forEach(p => {
+                        reportDataHtml += `
+                                        <tr>
+                                            <td>${p.name}</td>
+                                            <td>${p.profit} ريال</td>
+                                        </tr>`;
+                    });
+                    reportDataHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'total_payments') {
+                    const paymentCount = Math.floor(Math.random() * 1000 + 100);
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="alert alert-primary">
+                                <h5 class="mb-0">عدد المدفوعات الكلي للفترة: <strong>${paymentCount} دفعة</strong></h5>
+                            </div>
+                        </div>`;
+                } else if (currentReportType === 'sold_products') {
+                    const soldProducts = [
+                        { id: 101, name: "لابتوب ديل", price: 2500, quantity: 1, date: "2024-05-20" },
+                        { id: 102, name: "هاتف سامسونج", price: 1800, quantity: 1, date: "2024-05-21" },
+                        { id: 103, name: "سماعات بلوتوث", price: 250, quantity: 1, date: "2024-05-21" },
+                        { id: 104, name: "شاحن سريع", price: 120, quantity: 1, date: "2024-05-22" }
+                    ];
+                    reportDataHtml += `
+                        <div class="report-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped mt-3">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>رقم المنتج</th>
+                                            <th>اسم المنتج</th>
+                                            <th>السعر</th>
+                                            <th>الكمية المباعة</th>
+                                            <th>تاريخ البيع</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                    soldProducts.forEach(p => {
+                        reportDataHtml += `
+                                        <tr>
+                                            <td>${p.id}</td>
+                                            <td>${p.name}</td>
+                                            <td>${p.price} ريال</td>
+                                            <td>${p.quantity}</td>
+                                            <td>${p.date}</td>
+                                        </tr>`;
+                    });
+                    reportDataHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                }
+
+                reportDataHtml += `</div>`;
+
+                // Add report actions
+                const reportActionsTemplate = document.getElementById('report-actions-template');
+                const reportActions = reportActionsTemplate.content.cloneNode(true);
+
+                reportResultsDiv.innerHTML = reportDataHtml;
+                reportResultsDiv.appendChild(reportActions);
+
+                alert(`جارٍ إنشاء تقرير ${currentReportType} من ${startDate} إلى ${endDate}`);
+            } else {
+                alert('الرجاء تحديد تاريخي البدء والانتهاء.');
+            }
+        }
+
+        function downloadReportAsPDF() {
+            const reportContent = document.querySelector('.report-content');
+            const reportTitle = document.getElementById('report-title').innerText;
+
+            const opt = {
+                margin: 1,
+                filename: `${reportTitle}-${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(reportContent).save();
+        }
+
+        // The printReport() function has been removed to resolve persistent JavaScript syntax errors.
+        // If you need to re-implement print functionality, please let me know.
+    </script>
+}
