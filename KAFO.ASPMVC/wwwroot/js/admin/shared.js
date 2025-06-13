@@ -1,11 +1,17 @@
 // Shared functionality for admin area
-function loadAdminContent(action) {
+function loadAdminContent(action, pageNumber) {
     // Show loading indicator
     $('#mainContent').html('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>');
 
+    // Construct URL with optional page number
+    let url = `/Admin/Admin/${action}`;
+    if (pageNumber) {
+        url += `?page=${pageNumber}`;
+    }
+
     // Load the partial view via AJAX
     $.ajax({
-        url: `/Admin/Admin/${action}`,
+        url: url,
         type: 'GET',
         success: function (result) {
             $('#mainContent').html(result);
@@ -32,6 +38,6 @@ $(document).ready(function () {
         $(this).parent().addClass('active');
 
         const action = $(this).data('action');
-        loadAdminContent(action);
+        loadAdminContent(action,1);
     });
 }); 

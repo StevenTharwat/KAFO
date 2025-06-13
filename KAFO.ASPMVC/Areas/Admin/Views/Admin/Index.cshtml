@@ -1,4 +1,4 @@
-﻿@model Kafo.ASPMVC.Models.HomeViewModel
+﻿@model AdminHomeVM
 @{
     ViewData["Title"] = "لوحة التحكم";
 }
@@ -7,24 +7,24 @@
     <!-- Statistics Cards -->
     @* @Html.Partial("_StatisticsCards", Model) *@
 
-    <!-- Management Sections -->
+   @*  <!-- Management Sections -->
     @Html.Partial("_SellersManagement", Model)
 
     <div class="card mb-4" id="categories-management">
         @Html.Partial("_CategoriesManagement", Model)
-    </div>
+    </div> *@
 
     <!-- Products Management -->
-    @Html.Partial("_ProductsManagement", Model)
+    @Html.Partial("_ProductsManagement", Model.Products)
 
-    <!-- Admins Management -->
+@*     <!-- Admins Management -->
     @Html.Partial("_AdminsManagement", Model)
 
     <!-- Placeholder for Profile Management -->
     @Html.Partial("_ProfileManagement", Model)
 
     <!-- Reports Management Section -->
-    @Html.Partial("_ReportsManagement", Model)
+    @Html.Partial("_ReportsManagement", Model) *@
 
 </div>
 

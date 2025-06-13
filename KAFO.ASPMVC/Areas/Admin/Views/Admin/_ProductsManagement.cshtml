@@ -1,4 +1,4 @@
-@model Kafo.ASPMVC.Models.HomeViewModel
+@model ProductsTableVM
 
 <div class="card mb-4" id="products-management">
     <div class="card-header bg-white">
@@ -28,8 +28,8 @@
                         <tr>
                             <td>@product.Id</td>
                             <td>@product.Name</td>
-                            <td>@product.SellingPrice ريال</td>
-                            <td>@product.StockQuantity</td>
+                            <td>@product.SellingPrice جنيه</td>
+                            <td>@product.StockQuantity</td>                   
                             <td>
                                 <span class="badge bg-@(product.IsActive ? "success" : "danger")">
                                     @(product.IsActive ? "متوفر" : "غير متوفر")

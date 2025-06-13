@@ -1,6 +1,9 @@
-﻿@using Kafo.ASPMVC.Models
+﻿@model AdminHomeVM
+
 <!DOCTYPE html>
+
 <html lang="en" dir="rtl">
+
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -115,7 +118,7 @@
 	<div id="sidebar">
 		<div class="sidebar-header">
 			<h3>اسم المسؤول</h3>
-			<span>admin@example.com</span>
+			<span>@Model.AdminName</span>
 		</div>
 		<ul class="components">
 			<li>
@@ -145,7 +148,7 @@
 	<div id="content">
 		<main role="main" class="pb-3">
 			<div class="container-fluid">
-				@Html.Partial("_StatisticsCards", (HomeViewModel)Model)
+				@Html.Partial("_StatisticsCards", (AdminHomeVM)Model)
 			</div>
 			<div id="mainContent">
 				@RenderBody()
