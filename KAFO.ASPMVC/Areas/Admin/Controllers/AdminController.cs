@@ -98,6 +98,26 @@ namespace Kafo.ASPMVC.Areas.Admin.Controllers
 			return View(viewModel);
 		}
 
-
+		public IActionResult Reports()
+		{
+			var model = new HomeViewModel(); // Replace with your actual model
+			return PartialView("_ReportsManagement", model);
+		}
+		public IActionResult Sellers()
+		{
+			HomeViewModel model = new HomeViewModel(); // Replace with your actual model
+			
+			return PartialView("_SellersManagement", model);
+		}
+		public IActionResult Categories()
+		{
+			var model = new HomeViewModel(); // Replace with your actual model
+			return PartialView("_CategoriesManagement", model);
+		}
+		public IActionResult Products()
+		{
+			var model = new HomeViewModel(); // Replace with your actual model
+			return PartialView("_ProductsManagement", model);
+		}
 	}
 }
