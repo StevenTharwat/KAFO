@@ -1,4 +1,6 @@
 ﻿using Kafo.DAL.Repository;
+using KAFO.BLL.Managers;
+using KAFO.Domain.Products;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KAFO.ASPMVC.Controllers
@@ -6,86 +8,166 @@ namespace KAFO.ASPMVC.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ProductManager productManager;
 
         public ProductController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            productManager = new ProductManager(unitOfWork);
         }
 
         // GET: ProductController
         public ActionResult Index()
         {
-            var Products = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            var Products = productManager.GetAll(includeProperties: "Category");
             return View(Products);
         }
 
         // GET: ProductController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            return View();
-        }
+            if (id == null)
+                return BadRequest();
+            var Product = productManager.Get(p => p.Id == id, "Category");
 
+            return View(Product);
+        }
+        [HttpGet]
         // GET: ProductController/Create
         public ActionResult Create()
         {
-            return View();
+            try
+            {
+                ViewBag.Mode = 'C';
+                var Categories = _unitOfWork.Category.GetAll();
+                ViewBag.Categories = Categories;
+                return View("Upsert", new Product());
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while processing your request");
+            }
         }
 
         // POST: ProductController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(Product product, IFormFile imageFile)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+
+                    product.ImageUrl = await UploadFile(imageFile, product.Name);
+
+                    //BLL MAke LastPurchasing = AVGPurchasing
+                    productManager.Add(product);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return Create();
+                }
             }
             catch
             {
-                return View();
+                return StatusCode(500, "An error occurred while processing your request");
             }
         }
 
         // GET: ProductController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            return View();
+            if (id == null)
+                return BadRequest();
+            ViewBag.Mode = 'E';
+            var Categories = _unitOfWork.Category.GetAll();
+            var Product = productManager.Get(p => p.Id == id, "Category");
+            ViewBag.Categories = Categories;
+            return View("Upsert", Product);
         }
 
         // POST: ProductController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(int? id, Product product, IFormFile imageFile)
         {
+            if (id == null)
+                return BadRequest();
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+
+                    product.ImageUrl = await UploadFile(imageFile, product.Name);
+                    productManager.AddORUpdate((int) id, product);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return Edit(id);
+                }
             }
             catch
             {
-                return View();
+                return StatusCode(500, "An error occurred while processing your request");
             }
         }
 
         // GET: ProductController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+                return BadRequest();
+
+            var Product = productManager.Get(p => p.Id == id, "Category");
+
+            return View(Product);
         }
 
         // POST: ProductController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteConfirmed(int? id)
         {
+            if (id == null)
+                return BadRequest();
             try
             {
+                var p = productManager.Get(p => p.Id == id);
+                if (p != null)
+                {
+                    productManager.Remove(p);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return StatusCode(500, "An error occurred while processing your request");
             }
+        }
+
+        private async Task<string?> UploadFile(IFormFile imageFile, string productName)
+        {
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Upload/products");
+                Directory.CreateDirectory(uploadsFolder); // make sure folder exists
+                //uniqe => productName only
+                var fileName = $"[{productName}] - {DateTime.Now.ToString("dd-MM-yyy-HH-mm-ss")}{Path.GetExtension(imageFile.FileName)}"; // safer filename
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                // Save image URL in your model
+                return $"/images/Upload/products/{fileName}";
+            }
+            return null;
         }
     }
 }

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\KAFO.Domain\KAFO.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\Upload\products\" />
+  </ItemGroup>
+
 </Project>

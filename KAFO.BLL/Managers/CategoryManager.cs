@@ -1,6 +1,8 @@
-﻿namespace KAFO.BLL.Managers
+﻿using KAFO.Domain.Products;
+
+namespace KAFO.BLL.Managers
 {
-    public class CategoryManager
+    public class CategoryManager : IManager<Category>
     {
     }
 }

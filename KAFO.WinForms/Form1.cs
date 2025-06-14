@@ -1,4 +1,3 @@
-using KAFO.BLL.Managers;
 using KAFO.Domain.Products;
 
 namespace KAFO.WinForms
@@ -84,20 +83,20 @@ namespace KAFO.WinForms
 
         private void FormRefresh()
         {
-            products = ProductManager.GetAll();
-            Producsflow.Controls.Clear();
-            foreach (var p in products)
-            {
-                Button dynamicButton = new Button();
-                dynamicButton.Text = $"{p.Name} - {p.SellingPrice}";
-                dynamicButton.Width = 100;
-                dynamicButton.Tag = p;
-                dynamicButton.Height = 40;
-                dynamicButton.Margin = new Padding(5); // Add spacing
-                dynamicButton.Click += DynamicButton_Click;
+            //products = productManager.GetAll();
+            //Producsflow.Controls.Clear();
+            //foreach (var p in products)
+            //{
+            //    Button dynamicButton = new Button();
+            //    dynamicButton.Text = $"{p.Name} - {p.SellingPrice}";
+            //    dynamicButton.Width = 100;
+            //    dynamicButton.Tag = p;
+            //    dynamicButton.Height = 40;
+            //    dynamicButton.Margin = new Padding(5); // Add spacing
+            //    dynamicButton.Click += DynamicButton_Click;
 
-                Producsflow.Controls.Add(dynamicButton);
-            }
+            //    Producsflow.Controls.Add(dynamicButton);
+            //}
         }
 
         private void btnPay_Click(object sender, EventArgs e)

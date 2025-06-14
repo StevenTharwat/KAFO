@@ -1,7 +1,4 @@
-﻿using KAFO.BLL.Managers;
-using KAFO.Domain.Products;
-
-namespace KAFO.WinForms
+﻿namespace KAFO.WinForms
 {
     public partial class ProductForm : Form
     {
@@ -12,9 +9,9 @@ namespace KAFO.WinForms
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            ProductManager.Add(new Product(txtName.Text, 0, nudPrice.Value));
-            txtName.Text = "";
-            nudPrice.Value = 0;
+            //ProductManager.Add(new Product(txtName.Text, 0, nudPrice.Value));
+            //txtName.Text = "";
+            //nudPrice.Value = 0;
         }
     }
 }

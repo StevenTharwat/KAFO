@@ -18,7 +18,7 @@ namespace KAFO.ASPMVC
 
             // Register Unit of Work
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            //builder.Services.AddScoped(typeof(IManager<>), typeof(Manager<>));
 
             var app = builder.Build();
 
@@ -35,7 +35,7 @@ namespace KAFO.ASPMVC
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=product}/{action=Index}/{id?}");
 
             app.Run();
         }
