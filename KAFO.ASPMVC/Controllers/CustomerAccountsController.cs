@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using Kafo.DAL.Data;
 using KAFO.Domain.Users;
-using Kafo.DAL.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KAFO.ASPMVC.Controllers
 {
     public class CustomerAccountsController : Controller
     {
+        // change to CustomerAccounts Manager
         private readonly AppDBContext _context;
 
         public CustomerAccountsController(AppDBContext context)
