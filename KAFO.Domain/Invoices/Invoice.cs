@@ -1,16 +1,18 @@
 ﻿using KAFO.Domain.Products;
 using KAFO.Domain.Statics;
 using KAFO.Domain.Users;
+using System.ComponentModel.DataAnnotations;
 namespace KAFO.Domain.Invoices
 {
     public abstract class Invoice : Base
     {
 
-        public int Id { private set; get; }
-        public DateTime CreatedAt { private set; get; }
-        public ICollection<InvoiceItem> Items { private set; get; } = [];
-        public User User { private set; get; }
-        public decimal TotalInvoice { private set; get; }
+        public int Id { set; get; }
+        public DateTime CreatedAt { set; get; }
+        [Required]
+        public required ICollection<InvoiceItem> Items { set; get; } = [];
+        public User User { set; get; }
+        public decimal TotalInvoice { set; get; }
 
         protected Invoice()
         {

@@ -12,7 +12,7 @@ namespace KAFO.Domain.Products
 
         public decimal AveragePurchasePrice { set; get; }
         public decimal LastPurchasingPrice { set; get; }
-        [Range(20, 100, ErrorMessage = "حااااااسب")]
+        [Range(0.25, int.MaxValue)]
         public decimal SellingPrice { set; get; }
         public decimal StockQuantity { get; set; }
         public bool IsActive { get; set; }

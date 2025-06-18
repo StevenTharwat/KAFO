@@ -23,6 +23,12 @@ namespace Kafo.DAL.Repository
             _dbcontext = dbContext;
             Category = new CategoryRepository(_dbcontext);
             Product = new ProductRepsitory(_dbcontext);
+
+            CashInvoice = new CashInvoiceRepsitory(_dbcontext);
+            CreditInvoice = new CreditInvoiceRepsitory(_dbcontext);
+            CustomerAccount = new CustomerAccountRepsitory(_dbcontext);
+            InvoiceItem = new InvoiceItemRepsitory(_dbcontext);
+            Invoice = new InvoiceRepsitory(_dbcontext);
         }
 
         public void Save()

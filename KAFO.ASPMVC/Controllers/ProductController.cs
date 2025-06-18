@@ -38,10 +38,9 @@ namespace KAFO.ASPMVC.Controllers
         {
             try
             {
-                ViewBag.Mode = 'C';
                 var Categories = _unitOfWork.Category.GetAll();
                 ViewBag.Categories = Categories;
-                return View("Upsert", new Product());
+                return View();
 
             }
             catch (Exception)
@@ -82,17 +81,16 @@ namespace KAFO.ASPMVC.Controllers
         {
             if (id == null)
                 return BadRequest();
-            ViewBag.Mode = 'E';
             var Categories = _unitOfWork.Category.GetAll();
             var Product = productManager.Get(p => p.Id == id, "Category");
             ViewBag.Categories = Categories;
-            return View("Upsert", Product);
+            return View(Product);
         }
 
         // POST: ProductController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, Product product, IFormFile imageFile)
+        public async Task<IActionResult> Edit(int? id, Product product, IFormFile? imageFile)
         {
             if (id == null)
                 return BadRequest();
@@ -149,7 +147,7 @@ namespace KAFO.ASPMVC.Controllers
             }
         }
 
-        private async Task<string?> UploadFile(IFormFile imageFile, string productName)
+        private async Task<string?> UploadFile(IFormFile? imageFile, string productName)
         {
             if (imageFile != null && imageFile.Length > 0)
             {
